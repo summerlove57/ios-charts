@@ -21,6 +21,9 @@ import CoreGraphics
 
 public class ChartYAxisRenderer: ChartAxisRendererBase
 {
+    public var timeIntervals : Bool?
+    public var timeIntervalsForSeconds : Bool?
+    public var decimalIntervals : Bool?
     public var yAxis: ChartYAxis?
     
     public init(viewPortHandler: ChartViewPortHandler, yAxis: ChartYAxis, transformer: ChartTransformer!)
@@ -29,7 +32,7 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
         
         self.yAxis = yAxis
     }
-    
+
     /// Computes the axis values.
     public func computeAxis(yMin yMin: Double, yMax: Double)
     {
@@ -54,10 +57,10 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
                 yMax = Double(p2.y)
             }
         }
-        
+
         computeAxisValues(min: yMin, max: yMax)
     }
-    
+
     /// Sets up the y-axis labels. Computes the desired number of labels between
     /// the two given extremes. Unlike the papareXLabels() method, this method
     /// needs to be called upon every refresh of the view.
@@ -70,7 +73,7 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
         
         let labelCount = yAxis.labelCount
         let range = abs(yMax - yMin)
-    
+
         if (labelCount == 0 || range <= 0)
         {
             yAxis.entries = [Double]()
@@ -96,7 +99,151 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
             // Use one order of magnitude higher, to avoid intervals like 0.9 or 90
             interval = floor(10.0 * Double(intervalMagnitude))
         }
-        
+
+        // Custom intervals overriding
+        // Two main modes are available here
+        //   - time intervals: 1,5,15,30,60,120,180,240,360,720
+        //   - 'standard intervals': 0.5,1,5,10,20,25,50,100
+        //
+        // Also possible to deactivate the 0.5 interval
+
+        if timeIntervals ?? false {
+            if (interval<1) {
+                interval = 1
+            }
+
+            if (interval>1) && (interval<5) {
+                interval = 5
+            }
+
+            if (interval > 5) && (interval < 15) {
+                interval = 15
+            }
+
+            if (interval > 15) && (interval < 30) {
+                interval = 30
+            }
+
+            if (interval > 30) && (interval < 60) {
+                interval = 60
+            }
+
+            if (interval > 60) && (interval < 120) {
+                interval = 120
+            }
+
+            if (interval > 120) && (interval < 180) {
+                interval = 180
+            }
+
+            if (interval > 180) && (interval < 240) {
+                interval = 240
+            }
+
+            if (interval > 240) && (interval < 360) {
+                interval = 360
+            }
+
+            if (interval > 360) && (interval < 720) {
+                interval = 720
+            }
+
+        } else {
+            if timeIntervalsForSeconds ?? false {
+                if (interval < 1) {
+                    interval = 1
+                }
+
+                if (interval > 1) && (interval < 10) {
+                    interval = 10
+                }
+
+                if (interval > 10) && (interval < 30) {
+                    interval = 30
+                }
+
+                if (interval > 30) && (interval<60) {
+                    interval = 60
+                }
+
+                if (interval>60) && (interval<300) {
+                    interval = 300
+                }
+
+                if (interval > 300) && (interval < 900) {
+                    interval = 900
+                }
+
+                if (interval > 900) && (interval < 1800) {
+                    interval = 1800
+                }
+
+                if (interval > 1800) && (interval < 3600) {
+                    interval = 3600
+                }
+
+                if (interval > 3600) && (interval < 7200) {
+                    interval = 7200
+                }
+
+                if (interval > 7200) && (interval < 10800) {
+                    interval = 10800
+                }
+
+                if (interval > 10800) && (interval < 14400) {
+                    interval = 14400
+                }
+
+                if (interval > 14400) && (interval < 21600) {
+                    interval = 21600
+                }
+
+                if (interval > 21600) && (interval < 43200) {
+                    interval = 43200
+                }
+            } else {
+
+                // Are decimals intervals enabled?
+                if (decimalIntervals ?? false) {
+                    if (interval<0.5) {
+                        interval = 0.5
+                    }
+                } else {
+                    if (interval < 1) {
+                        interval = 1
+                    }
+                }
+
+                if (interval>0.5) && (interval<1) {
+                    interval = 1
+                }
+
+                if (interval > 1) && (interval<5) {
+                    interval = 5
+                }
+
+                if (interval > 5) && (interval < 10) {
+                    interval = 10
+                }
+
+                if (interval > 10) && (interval < 20) {
+                    interval = 20
+                }
+
+                if (interval > 20) && (interval < 25) {
+                    interval = 25
+                }
+
+                if (interval > 25) && (interval < 50) {
+                    interval = 50
+                }
+
+                if (interval > 50) && (interval < 100) {
+                    interval = 100
+                }
+            }
+        }
+
         // force label count
         if yAxis.isForceLabelsEnabled
         {
@@ -112,7 +259,7 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
                 yAxis.entries = [Double]()
                 yAxis.entries.reserveCapacity(labelCount)
             }
-            
+
             var v = yMin
             
             for _ in 0 ..< labelCount
@@ -120,7 +267,7 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
                 yAxis.entries.append(v)
                 v += step
             }
-            
+
         }
         else
         {
@@ -190,9 +337,9 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
         let labelPosition = yAxis.labelPosition
         
         var xPos = CGFloat(0.0)
-        
+
         var textAlign: NSTextAlignment
-        
+
         if (dependency == .Left)
         {
             if (labelPosition == .OutsideChart)
@@ -205,7 +352,7 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
                 textAlign = .Left
                 xPos = viewPortHandler.offsetLeft + xoffset
             }
-            
+
         }
         else
         {
@@ -223,7 +370,7 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
         
         drawYLabels(context: context, fixedPosition: xPos, offset: yoffset - yAxis.labelFont.lineHeight, textAlign: textAlign)
     }
-    
+
     private var _axisLineSegmentsBuffer = [CGPoint](count: 2, repeatedValue: CGPoint())
     
     public override func renderAxisLine(context context: CGContext)
@@ -234,7 +381,7 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
         {
             return
         }
-        
+
         CGContextSaveGState(context)
         
         CGContextSetStrokeColorWithColor(context, yAxis.axisLineColor.CGColor)
@@ -264,10 +411,10 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
             _axisLineSegmentsBuffer[1].y = viewPortHandler.contentBottom
             CGContextStrokeLineSegments(context, _axisLineSegmentsBuffer, 2)
         }
-        
+
         CGContextRestoreGState(context)
     }
-    
+
     /// draws the y-labels on the specified x-position
     internal func drawYLabels(context context: CGContext, fixedPosition: CGFloat, offset: CGFloat, textAlign: NSTextAlignment)
     {
@@ -277,7 +424,7 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
         let labelTextColor = yAxis.labelTextColor
         
         let valueToPixelMatrix = transformer.valueToPixelMatrix
-        
+
         var pt = CGPoint()
         
         for i in 0 ..< yAxis.entryCount
@@ -288,18 +435,18 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
             {
                 break
             }
-            
+
             pt.x = 0
             pt.y = CGFloat(yAxis.entries[i])
             pt = CGPointApplyAffineTransform(pt, valueToPixelMatrix)
-            
+
             pt.x = fixedPosition
             pt.y += offset
-            
+
             ChartUtils.drawText(context: context, text: text, point: pt, align: textAlign, attributes: [NSFontAttributeName: labelFont, NSForegroundColorAttributeName: labelTextColor])
         }
     }
-    
+
     private var _gridLineBuffer = [CGPoint](count: 2, repeatedValue: CGPoint())
     
     public override func renderGridLines(context context: CGContext)
@@ -398,7 +545,7 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
         
         CGContextRestoreGState(context)
     }
-    
+
     private var _limitLineSegmentsBuffer = [CGPoint](count: 2, repeatedValue: CGPoint())
     
     public override func renderLimitLines(context context: CGContext)
@@ -411,11 +558,11 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
         {
             return
         }
-        
+
         CGContextSaveGState(context)
-        
+
         let trans = transformer.valueToPixelMatrix
-        
+
         var position = CGPoint(x: 0.0, y: 0.0)
         
         for i in 0 ..< limitLines.count
@@ -430,12 +577,12 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
             position.x = 0.0
             position.y = CGFloat(l.limit)
             position = CGPointApplyAffineTransform(position, trans)
-            
+
             _limitLineSegmentsBuffer[0].x = viewPortHandler.contentLeft
             _limitLineSegmentsBuffer[0].y = position.y
             _limitLineSegmentsBuffer[1].x = viewPortHandler.contentRight
             _limitLineSegmentsBuffer[1].y = position.y
-            
+
             CGContextSetStrokeColorWithColor(context, l.lineColor.CGColor)
             CGContextSetLineWidth(context, l.lineWidth)
             if (l.lineDashLengths != nil)
@@ -446,11 +593,11 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
             {
                 CGContextSetLineDash(context, 0.0, nil, 0)
             }
-            
+
             CGContextStrokeLineSegments(context, _limitLineSegmentsBuffer, 2)
-            
+
             let label = l.label
-            
+
             // if drawing the limit-value label is enabled
             if (l.drawLabelEnabled && label.characters.count > 0)
             {
@@ -501,7 +648,7 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
                 }
             }
         }
-        
+
         CGContextRestoreGState(context)
     }
 }
