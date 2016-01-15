@@ -139,7 +139,7 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
                     interval = 10
                 }
 
-                if (interval > 1) && (interval < 30) {
+                if (interval > 10) && (interval < 30) {
                     interval = 30
                 }
 
