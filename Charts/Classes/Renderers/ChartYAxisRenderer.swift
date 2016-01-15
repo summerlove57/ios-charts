@@ -18,6 +18,7 @@ import UIKit
 public class ChartYAxisRenderer: ChartAxisRendererBase
 {
     public var timeIntervals : Bool?
+    public var timeIntervalsForSeconds : Bool?
     public var decimalIntervals : Bool?
     internal var _yAxis: ChartYAxis!
 
@@ -129,43 +130,94 @@ public class ChartYAxisRenderer: ChartAxisRendererBase
             }
 
         } else {
-            // Are decimals intervals enabled?
-            if (decimalIntervals ?? false) {
-                if (interval<0.5) {
-                    interval = 0.5
-                }
-            } else {
+            if timeIntervalsForSeconds ?? false {
                 if (interval < 1) {
                     interval = 1
                 }
-            }
 
-            if (interval>0.5) && (interval<1) {
-                interval = 1
-            }
+                if (interval > 1) && (interval < 30) {
+                    interval = 30
+                }
 
-            if (interval > 1) && (interval<5) {
-                interval = 5
-            }
+                if (interval > 30) && (interval<60) {
+                    interval = 60
+                }
 
-            if (interval > 5) && (interval < 10) {
-                interval = 10
-            }
+                if (interval>60) && (interval<300) {
+                    interval = 300
+                }
 
-            if (interval > 10) && (interval < 20) {
-                interval = 20
-            }
+                if (interval > 300) && (interval < 900) {
+                    interval = 900
+                }
 
-            if (interval > 20) && (interval < 25) {
-                interval = 25
-            }
+                if (interval > 900) && (interval < 1800) {
+                    interval = 1800
+                }
 
-            if (interval > 25) && (interval < 50) {
-                interval = 50
-            }
+                if (interval > 1800) && (interval < 3600) {
+                    interval = 3600
+                }
 
-            if (interval > 50) && (interval < 100) {
-                interval = 100
+                if (interval > 3600) && (interval < 7200) {
+                    interval = 7200
+                }
+
+                if (interval > 7200) && (interval < 10800) {
+                    interval = 10800
+                }
+
+                if (interval > 10800) && (interval < 14400) {
+                    interval = 14400
+                }
+
+                if (interval > 14400) && (interval < 21600) {
+                    interval = 21600
+                }
+
+                if (interval > 21600) && (interval < 43200) {
+                    interval = 43200
+                }
+            } else {
+
+                // Are decimals intervals enabled?
+                if (decimalIntervals ?? false) {
+                    if (interval<0.5) {
+                        interval = 0.5
+                    }
+                } else {
+                    if (interval < 1) {
+                        interval = 1
+                    }
+                }
+
+                if (interval>0.5) && (interval<1) {
+                    interval = 1
+                }
+
+                if (interval > 1) && (interval<5) {
+                    interval = 5
+                }
+
+                if (interval > 5) && (interval < 10) {
+                    interval = 10
+                }
+
+                if (interval > 10) && (interval < 20) {
+                    interval = 20
+                }
+
+                if (interval > 20) && (interval < 25) {
+                    interval = 25
+                }
+
+                if (interval > 25) && (interval < 50) {
+                    interval = 50
+                }
+
+                if (interval > 50) && (interval < 100) {
+                    interval = 100
+                }
             }
         }
 
